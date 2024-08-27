@@ -12,7 +12,7 @@ class SubstringHighlight extends StatelessWidget {
       this.overflow = TextOverflow.clip,
       this.term,
       this.terms,
-      this.softWrap = true,
+      this.softWrap = false,
       required this.text,
       this.textAlign = TextAlign.left,
       this.textStyle = const TextStyle(
