@@ -12,6 +12,7 @@ class SubstringHighlight extends StatelessWidget {
       this.overflow = TextOverflow.clip,
       this.term,
       this.terms,
+      this.softWrap = true,
       required this.text,
       this.textAlign = TextAlign.left,
       this.textStyle = const TextStyle(
@@ -21,8 +22,7 @@ class SubstringHighlight extends StatelessWidget {
         color: Colors.red,
       ),
       this.wordDelimiters = ' .,;?!<>[]~`@#\$%^&*()+-=|\/_',
-      this.words =
-          false // default is to match substrings (hence the package name!)
+      this.words = false // default is to match substrings (hence the package name!)
 
       })
       : assert(term != null || terms != null);
@@ -65,6 +65,12 @@ class SubstringHighlight extends StatelessWidget {
   /// If true then match complete words only (instead of characters or substrings within words).  This feature is in ALPHA... use 'words' AT YOUR OWN RISK!!!
   final bool words;
 
+  /// Whether the text should break at soft line breaks. If false, the glyphs in
+  /// the text will be positioned as if there were an infinite amount of space
+  /// at the end of each line. If true, the glyphs in the text will be positioned
+  /// as if the next line started immediately after the end of the previous line.
+  final bool softWrap;
+
   @override
   Widget build(BuildContext context) {
     final String textLC = caseSensitive ? text : text.toLowerCase();
@@ -84,8 +90,8 @@ class SubstringHighlight extends StatelessWidget {
     int idx = 0; // walks text (string that is searched)
     while (idx < textLC.length) {
       // print('=== idx=$idx');
-      nonHighlightAdd(int end) => children
-          .add(TextSpan(text: text.substring(start, end), style: textStyle));
+      nonHighlightAdd(int end) =>
+          children.add(TextSpan(text: text.substring(start, end), style: textStyle));
 
       // find index of term that's closest to current idx position
       int iNearest = -1;
@@ -99,8 +105,7 @@ class SubstringHighlight extends StatelessWidget {
 
           if (words) {
             if (at > 0 &&
-                !wordDelimiters.contains(
-                    textLC[at - 1])) // is preceding character a delimiter?
+                !wordDelimiters.contains(textLC[at - 1])) // is preceding character a delimiter?
             {
               // print('disqualify preceding: idx=$idx i=$i');
               continue; // preceding character isn't delimiter so disqualify
@@ -108,8 +113,8 @@ class SubstringHighlight extends StatelessWidget {
 
             int followingIdx = at + termListLC[i].length;
             if (followingIdx < textLC.length &&
-                !wordDelimiters.contains(textLC[
-                    followingIdx])) // is character following the search term a delimiter?
+                !wordDelimiters.contains(
+                    textLC[followingIdx])) // is character following the search term a delimiter?
             {
               // print('disqualify following: idx=$idx i=$i');
               continue; // following character isn't delimiter so disqualify
@@ -138,9 +143,8 @@ class SubstringHighlight extends StatelessWidget {
 
         // output the match using desired highlighting
         int termLen = termListLC[iNearest].length;
-        children.add(TextSpan(
-            text: text.substring(start, idxNearest + termLen),
-            style: textStyleHighlight));
+        children.add(
+            TextSpan(text: text.substring(start, idxNearest + termLen), style: textStyleHighlight));
         start = idx = idxNearest + termLen;
       } else {
         if (words) {
@@ -163,6 +167,7 @@ class SubstringHighlight extends StatelessWidget {
         overflow: overflow,
         text: TextSpan(children: children, style: textStyle),
         textAlign: textAlign,
+        softWrap: softwrap,
         textScaleFactor: MediaQuery.of(context).textScaleFactor);
   }
 }
