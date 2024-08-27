@@ -167,7 +167,7 @@ class SubstringHighlight extends StatelessWidget {
         overflow: overflow,
         text: TextSpan(children: children, style: textStyle),
         textAlign: textAlign,
-        softWrap: softwrap,
+        softWrap: softWrap,
         textScaleFactor: MediaQuery.of(context).textScaleFactor);
   }
 }
